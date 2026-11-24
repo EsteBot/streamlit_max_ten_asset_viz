@@ -163,66 +163,61 @@ ticker_symbol_data = {
 }
 
 st.caption(f"yfinance version: {yf.__version__}")
-@st.cache_data(ttl=3600, show_spinner=False)
+
+
 def debug_fetch(ticker: str, start_date, end_date):
-  clean_ticker = ticker.strip().upper()
-  start_str = pd.Timestamp(start_date).strftime("%Y-%m-%d")
-  end_str = pd.Timestamp(end_date).strftime("%Y-%m-%d")
+    clean_ticker = ticker.strip().upper()
+    start_str = pd.Timestamp(start_date).strftime("%Y-%m-%d")
+    end_str = pd.Timestamp(end_date).strftime("%Y-%m-%d")
 
-  try:
-    df = yf.download(
-        clean_ticker,
-        start=start_str,
-        end=end_str,
-        progress=False,
-        threads=False,
-        auto_adjust=False,
-    )
-    if df is None or df.empty:
-      st.warning(
-          f"[{clean_ticker}] yf.download returned empty for {start_str} ->"
-          f" {end_str}"
-      )
-      return None
-
-    # Handle MultiIndex columns if yfinance returns (Price, Ticker)
-    if isinstance(df.columns, pd.MultiIndex):
-      if "Close" in df.columns.get_level_values(0):
-        close_col = df["Close"]
-        if isinstance(close_col, pd.DataFrame):
-          close_series = close_col.iloc[:, 0]
-        else:
-          close_series = close_col
-      else:
-        st.warning(
-            f"[{clean_ticker}] No 'Close' level in columns: {list(df.columns)}"
+    try:
+        df = yf.download(
+            clean_ticker,
+            start=start_str,
+            end=end_str,
+            progress=False,
+            threads=False,
+            auto_adjust=False,
         )
+        if df is None or df.empty:
+            st.warning(f"[{clean_ticker}] yf.download returned empty for {start_str} -> {end_str}")
+            return None
+
+        if isinstance(df.columns, pd.MultiIndex):
+            if "Close" in df.columns.get_level_values(0):
+                close_col = df["Close"]
+                close_series = close_col.iloc[:, 0] if isinstance(close_col, pd.DataFrame) else close_col
+            else:
+                st.warning(f"[{clean_ticker}] No 'Close' level in columns: {list(df.columns)}")
+                return None
+        else:
+            if "Close" not in df.columns:
+                st.warning(f"[{clean_ticker}] No 'Close' column in: {list(df.columns)}")
+                return None
+            close_series = df["Close"]
+
+        close_series = close_series.dropna()
+        if close_series.empty:
+            st.warning(f"[{clean_ticker}] 'Close' series was all NaN.")
+            return None
+
+        clean_df = pd.DataFrame({"Close": close_series})
+        start_price = float(clean_df["Close"].iloc[0])
+        end_price = float(clean_df["Close"].iloc[-1])
+
+        return {
+            "data": clean_df,
+            "start_price": start_price,
+            "end_price": end_price,
+            "price_difference": end_price - start_price,
+        }
+    except Exception as e:
+        st.error(f"[{clean_ticker}] Exception during fetch: {type(e).__name__}: {e}")
         return None
-    else:
-      if "Close" not in df.columns:
-        st.warning(f"[{clean_ticker}] No 'Close' column in: {list(df.columns)}")
-        return None
-      close_series = df["Close"]
 
-    close_series = close_series.dropna()
-    if close_series.empty:
-      st.warning(f"[{clean_ticker}] 'Close' series was all NaN.")
-      return None
 
-    clean_df = pd.DataFrame({"Close": close_series})
-    start_price = float(clean_df["Close"].iloc[0])
-    end_price = float(clean_df["Close"].iloc[-1])
-
-    return {
-        "data": clean_df,
-        "start_price": start_price,
-        "end_price": end_price,
-        "price_difference": end_price - start_price,
-    }
-  except Exception as e:
-    st.error(f"[{clean_ticker}] Exception during fetch: {type(e).__name__}: {e}")
-    return None
-
+def get_stock_data(ticker: str, start_date, end_date):
+    return debug_fetch(ticker, start_date, end_date)
 
 def compute_risk_return(df: pd.DataFrame):
     daily_returns = df["Close"].pct_change().dropna()
@@ -390,11 +385,7 @@ if st.session_state.tickers:
                         start_price = round(item["start_price"], 2)
                         end_price = round(item["end_price"], 2)
                         percent_change = round(
-                            (item["end_price"] - item["start_price"])
-                            / item["start_price"]
-                            * 100,
-                            2,
-                        )
+                            (item["end_price"] - item["start_price"]) / item["start_price"] * 100, 2)
 
                         with metrics_container:
                             with metric_col_list[met_index]:
