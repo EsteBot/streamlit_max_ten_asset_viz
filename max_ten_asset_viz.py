@@ -1,6 +1,5 @@
 import streamlit as st
 import yfinance as yf
-from datetime import datetime
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
@@ -18,76 +17,191 @@ st.markdown(
     }
     </style>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
 # Centering the headers
-st.markdown("<h1 class='center'>An EsteStyle Streamlit Page<br>Where Python Wiz Meets Data Viz!</h1>", unsafe_allow_html=True)
+st.markdown(
+    "<h1 class='center'>An EsteStyle Streamlit Page<br>Where Python Wiz Meets Data Viz!</h1>",
+    unsafe_allow_html=True,
+)
 st.markdown("<h1 class='center'></h1>", unsafe_allow_html=True)
 
-st.markdown("<img src='https://1drv.ms/i/s!ArWyPNkF5S-foZspwsary83MhqEWiA?embed=1&width=307&height=307' width='300' style='display: block; margin: 0 auto;'>" , unsafe_allow_html=True)
+st.markdown(
+    "<img src='https://1drv.ms/i/s!ArWyPNkF5S-foZspwsary83MhqEWiA?embed=1&width=307&height=307' width='300' style='display: block; margin: 0 auto;'>",
+    unsafe_allow_html=True,
+)
 
 st.markdown("<h1 class='center'> </h1>", unsafe_allow_html=True)
 
-st.markdown("<h1 class='center'>Multi-Stock Comparision App</h1>", unsafe_allow_html=True)
+st.markdown(
+    "<h1 class='center'>Multi-Stock Comparision App</h1>", unsafe_allow_html=True
+)
 
 st.markdown("<h1 class='center'> </h1>", unsafe_allow_html=True)
 
-st.markdown("<h3 class='center'>- Analysis to compare historical data of stocks</h3>" , unsafe_allow_html=True)
-st.markdown("<h3 class='center'>- Stocks analyzed are identified by their ticker symbols</h3>", unsafe_allow_html=True)
-st.markdown("<h3 class='center'>- All stock analysis done with data from Yahoo Finance</h3>" , unsafe_allow_html=True)
+st.markdown(
+    "<h3 class='center'>- Analysis to compare historical data of stocks</h3>",
+    unsafe_allow_html=True,
+)
+st.markdown(
+    "<h3 class='center'>- Stocks analyzed are identified by their ticker symbols</h3>",
+    unsafe_allow_html=True,
+)
+st.markdown(
+    "<h3 class='center'>- All stock analysis done with data from Yahoo Finance</h3>",
+    unsafe_allow_html=True,
+)
 
 st.markdown("<h1 class='center'> </h1>", unsafe_allow_html=True)
 
 ticker_symbol_data = {
-    "Company Name": ["Apple", "NVIDIA", "Microsoft", "Alphabet", "Amazon", 
-                     "Meta Platforms", "Berkshire Hathaway", "Broadcom", "Tesla", "Eli Lilly", 
-                     "Walmart", "JPMorgan Chase", "Visa", "Exxon Mobil", "United Health", 
-                     "Oracle", "Mastercard", "Procter & Gamble", "Costco", "Home Depot", 
-                     "Johnson & Johnson", "AbbVie", "Bank of America", "Netflix", "Salesforce", 
-                     "Coca-Cola", "Chevron", "Advanced Micro Devices", "Merck", "T-Mobile", 
-                     "PepsiCo", "Accenture", "Linde", "Cisco Systems", "Wells Fargo", 
-                     "Adobe", "McDonald's", "Thermo Fisher Scientific", "Philip Morris", "Abbott Laboratories", 
-                     "ServiceNow", "QUALCOMM", "International Business Machines", "Texas Instruments", "Morgan Stanley", 
-                     "American Express", "General Electric", "Caterpillar", "Intuitive Surgical", "Danaher"],
-
-    "Ticker Symbol": ["AAPL", "NVDA", "MSFT", "GOOGL", "AMZN",
-                      "META", "BRK-B", "AVGO", "TSLA", "LLY",
-                      "WMT", "JPM", "V", "XOM", "UNH",
-                      "ORCL", "MA", "PG", "COST", "HD",
-                      "JNJ", "ABBV", "BAC", "NFLX", "CRM",
-                      "KO", "CVX", "AMD", "MRK", "TMUS",
-                      "PEP", "ACN", "LIN", "CSCO", "WFC",
-                      "ADBE", "MCD", "TMO", "PM", "ABT",
-                      "NOW", "QCOM", "IBM", "TXN", "MS",
-                      "AXP", "GE", "CAT", "ISRG", "DHR",
-                      ]
+    "Company Name": [
+        "Apple",
+        "NVIDIA",
+        "Microsoft",
+        "Alphabet",
+        "Amazon",
+        "Meta Platforms",
+        "Berkshire Hathaway",
+        "Broadcom",
+        "Tesla",
+        "Eli Lilly",
+        "Walmart",
+        "JPMorgan Chase",
+        "Visa",
+        "Exxon Mobil",
+        "United Health",
+        "Oracle",
+        "Mastercard",
+        "Procter & Gamble",
+        "Costco",
+        "Home Depot",
+        "Johnson & Johnson",
+        "AbbVie",
+        "Bank of America",
+        "Netflix",
+        "Salesforce",
+        "Coca-Cola",
+        "Chevron",
+        "Advanced Micro Devices",
+        "Merck",
+        "T-Mobile",
+        "PepsiCo",
+        "Accenture",
+        "Linde",
+        "Cisco Systems",
+        "Wells Fargo",
+        "Adobe",
+        "McDonald's",
+        "Thermo Fisher Scientific",
+        "Philip Morris",
+        "Abbott Laboratories",
+        "ServiceNow",
+        "QUALCOMM",
+        "International Business Machines",
+        "Texas Instruments",
+        "Morgan Stanley",
+        "American Express",
+        "General Electric",
+        "Caterpillar",
+        "Intuitive Surgical",
+        "Danaher",
+    ],
+    "Ticker Symbol": [
+        "AAPL",
+        "NVDA",
+        "MSFT",
+        "GOOGL",
+        "AMZN",
+        "META",
+        "BRK-B",
+        "AVGO",
+        "TSLA",
+        "LLY",
+        "WMT",
+        "JPM",
+        "V",
+        "XOM",
+        "UNH",
+        "ORCL",
+        "MA",
+        "PG",
+        "COST",
+        "HD",
+        "JNJ",
+        "ABBV",
+        "BAC",
+        "NFLX",
+        "CRM",
+        "KO",
+        "CVX",
+        "AMD",
+        "MRK",
+        "TMUS",
+        "PEP",
+        "ACN",
+        "LIN",
+        "CSCO",
+        "WFC",
+        "ADBE",
+        "MCD",
+        "TMO",
+        "PM",
+        "ABT",
+        "NOW",
+        "QCOM",
+        "IBM",
+        "TXN",
+        "MS",
+        "AXP",
+        "GE",
+        "CAT",
+        "ISRG",
+        "DHR",
+    ],
 }
 
-# Fetch stock data
-def get_stock_data(ticker, start_date, end_date):
-    stock = yf.Ticker(ticker)
-    data = stock.history(start=start_date, end=end_date)
-    
-    # Get the price on the start date
-    start_price = data['Close'].iloc[0]
-    
-    # Get the price on the end date
-    end_price = data['Close'].iloc[-1]
-    
-    # Calculate the difference
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def get_stock_data(ticker: str, start_date, end_date):
+    clean_ticker = ticker.strip().upper()
+    if not clean_ticker or start_date >= end_date:
+        return None
+
+    try:
+        stock = yf.Ticker(clean_ticker)
+        data = stock.history(start=start_date, end=end_date)
+    except Exception:
+        return None
+
+    if data is None or data.empty or "Close" not in data.columns:
+        return None
+
+    close_series = data["Close"].dropna()
+    if close_series.empty:
+        return None
+
+    start_price = float(close_series.iloc[0])
+    end_price = float(close_series.iloc[-1])
     price_difference = end_price - start_price
 
-    # Return the data along with the new variables
     return {
-        'data': data,
-        'start_price': start_price,
-        'end_price': end_price,
-        'price_difference': price_difference
+        "data": data,
+        "start_price": start_price,
+        "end_price": end_price,
+        "price_difference": price_difference,
     }
 
-# Create Streamlit app
 
+def compute_risk_return(df: pd.DataFrame):
+    daily_returns = df["Close"].pct_change().dropna()
+    if daily_returns.empty:
+        return None, None
+    return float(daily_returns.mean()), float(daily_returns.std())
+
+
+# Create Streamlit app
 col_list = st.columns([1, 2, 1, 2, 1])
 
 # Initialize session state for the number of assets and tickers list
@@ -99,14 +213,19 @@ if "tickers" not in st.session_state:
 
 with col_list[1]:
     st.title("Total Stocks")
-    # Store the number of assets in session state
-    st.session_state.num_of_assets = st.number_input("How many stocks do you want to analyze?", min_value=1, max_value=100)
+    st.session_state.num_of_assets = st.number_input(
+        "How many stocks do you want to analyze?",
+        min_value=1,
+        max_value=100,
+        value=st.session_state.num_of_assets,
+    )
 
 with col_list[1]:
     st.write("")
     if st.button("Create Ticker Id Fields"):
-        # Reset tickers list in session state based on the updated number of assets
-        st.session_state.tickers = ["" for _ in range(st.session_state.num_of_assets)]
+        st.session_state.tickers = [
+            "" for _ in range(st.session_state.num_of_assets)
+        ]
 
 with col_list[3]:
     st.title("Date Range")
@@ -118,8 +237,10 @@ if st.session_state.tickers:
     with col_list[1]:
         st.title("Stock Ids")
         for i in range(st.session_state.num_of_assets):
-            # Use session state to keep values for each ticker input
-            st.session_state.tickers[i] = st.text_input(f"Enter stock ticker #{i + 1} (e.g., AAPL)", st.session_state.tickers[i])
+            st.session_state.tickers[i] = st.text_input(
+                f"Enter stock ticker #{i + 1} (e.g., AAPL)",
+                st.session_state.tickers[i],
+            )
 
         st.write("")
         analysis_button = st.button("Perform Graphical Analysis")
@@ -128,218 +249,207 @@ if st.session_state.tickers:
         st.title("Ticker Id Ref")
         st.write("50 top tickers of the S&P 500 Index")
         st.dataframe(ticker_symbol_data)
-    
+
     if analysis_button:
+        active_tickers = [
+            t.strip().upper() for t in st.session_state.tickers if t and t.strip()
+        ]
 
-####### Logic for Stock Price Display #######
-
-        st.title("")
-        st.markdown("<h3 class='center'>- To visualize changing price value, Close Price over time is displayed</h3>", unsafe_allow_html=True)
-
-        # Initialize plot
-        fig = go.Figure()
-
-        for ticker in (st.session_state.tickers):
-            if ticker:  # Ensure ticker input isn't empty
-                stock_data = get_stock_data(ticker, start_date, end_date)
-                df = stock_data['data']
-
-                # Add each stock’s close price to the plot
-                fig.add_trace(go.Scatter(x=df.index, y=df['Close'], mode='lines', name=ticker))
-
-        # Display the plot
-        fig.update_layout(title="Stock Value as Close Price", xaxis_title="Date", yaxis_title="USD")
-        st.plotly_chart(fig)
-
-        # Create a new container for metrics display below the plot
-        metrics_container = st.container()
-
-        # Maximum number of columns per row
-        max_columns_per_row = 5
-
-        # Iterate through the tickers and group them into rows
-        for i in range(0, len(st.session_state.tickers), max_columns_per_row):
-            row_tickers = st.session_state.tickers[i:i + max_columns_per_row]
-            
-            # Create a new row with columns for the tickers in this group
-            metric_col_list = st.columns(len(row_tickers))
-            
-            for met_index, ticker in enumerate(row_tickers):
-                if ticker:  # Ensure ticker input isn't empty
-                    stock_data = get_stock_data(ticker, start_date, end_date)
-
-                    # Round and extract values for metrics
-                    start_price = round(stock_data['start_price'], 2)
-                    end_price = round(stock_data['end_price'], 2)
-                    price_difference = round(stock_data['price_difference'], 2)
-
-                    # Display metrics in the appropriate column
-                    with metrics_container:
-                        with metric_col_list[met_index]:
-                            st.metric(
-                                label=f"Start: {start_price} | End: {end_price}",
-                                value=f"{ticker}",
-                                delta=f"${price_difference}"
-                            )
-
-####### Logic for Total Percent Change Display #######
-
-        st.title("")
-        st.markdown("<h3 class='center'>- Equalizing Initial Value: Analysis of Total Percent Change</h3>", unsafe_allow_html=True)
-
-        # Initialize plot
-        fig = go.Figure()
-
-        for ticker in st.session_state.tickers:
-            if ticker:  # Ensure ticker input isn't empty
-                stock_data = get_stock_data(ticker, start_date, end_date)
-                df = stock_data['data']
-
-                # Add each stock’s close price to the plot
-                fig.add_trace(go.Scatter(
-                    x=df.index, 
-                    y=(df['Close'] / df['Close'].iloc[0] - 1) * 100, 
-                    mode='lines', name=ticker)
+        if not active_tickers:
+            st.warning("Please enter at least one stock ticker symbol.")
+        elif start_date >= end_date:
+            st.warning("Start Date must be earlier than End Date.")
+        else:
+            results = {}
+            for ticker in active_tickers:
+                fetched = get_stock_data(ticker, start_date, end_date)
+                if fetched is None:
+                    st.warning(
+                        f"Could not load valid price data for '{ticker}' in the selected date range."
                     )
+                else:
+                    results[ticker] = fetched
 
-        # Display the plot
-        fig.update_layout(title="Stock Value as Total Percent Change",
-                        xaxis_title="Date", 
-                        yaxis_title="USD"
+            valid_tickers = list(results.keys())
+
+            if not valid_tickers:
+                st.error("No valid stock data available to plot.")
+            else:
+                ####### Logic for Stock Price Display #######
+                st.title("")
+                st.markdown(
+                    "<h3 class='center'>- To visualize changing price value, Close Price over time is displayed</h3>",
+                    unsafe_allow_html=True,
+                )
+
+                fig = go.Figure()
+                for ticker in valid_tickers:
+                    df = results[ticker]["data"]
+                    fig.add_trace(
+                        go.Scatter(
+                            x=df.index,
+                            y=df["Close"],
+                            mode="lines",
+                            name=ticker,
                         )
-        st.plotly_chart(fig)
-
-        # Create a new container for metrics display below the plot
-        metrics_container = st.container()
-
-        # Maximum number of columns per row
-        max_columns_per_row = 5
-
-        # Iterate through the tickers and group them into rows
-        for i in range(0, len(st.session_state.tickers), max_columns_per_row):
-            row_tickers = st.session_state.tickers[i:i + max_columns_per_row]
-            
-            # Create a new row with columns for the tickers in this group
-            metric_col_list = st.columns(len(row_tickers))
-
-            for met_index, ticker in enumerate(row_tickers):
-                if ticker:  # Ensure ticker input isn't empty
-                    stock_data = get_stock_data(ticker, start_date, end_date)
-
-                    # Round and extract values for metrics
-                    start_price = round(stock_data['start_price'], 2)
-                    end_price = round(stock_data['end_price'], 2)
-                    percent_change = round((end_price - start_price) / start_price * 100, 2)
-
-                # Display metrics in columns below the plot
-                    with metrics_container:
-                        with metric_col_list[met_index]:  # Use met_index for correct column
-                            st.metric(
-                                label=f"Start: {start_price} | End: {end_price}",
-                                value=f"{ticker}",
-                                delta=f"{percent_change}%"
-                            )
-
-####### Logic for Risk vs Return Display #######
-
-        st.title("")
-        st.markdown("<h3 class='center'>- To quantify risk, using pct returns, compare expected return with std of daily return</h3>", unsafe_allow_html=True)
-
-        # Initialize plot
-        fig = go.Figure()
-
-        for ticker in st.session_state.tickers:
-            if ticker:  # Ensure ticker input isn't empty
-                stock_data = get_stock_data(ticker, start_date, end_date)
-                df = stock_data['data']
-
-                # Calculate daily returns
-                df['Returns'] = df['Close'].pct_change()
-
-                # Combine the returns into a single DataFrame for analysis
-                rets = pd.DataFrame({
-                    ticker: df['Returns']
-                }).dropna()  # Drop rows with NaN values (i.e., where returns couldn't be calculated)
-
-                # Calculate expected return (mean) and risk (standard deviation)
-                expected_return = rets.mean()
-                risk = rets.std()
-
-                # Size of the points
-                area = np.pi * 7
-
-                fig.add_trace(go.Scatter(
-                    x=expected_return, 
-                    y=risk, 
-                    mode='markers', 
-                    marker=dict(size=area, 
-                                color=expected_return * risk, 
-                                colorscale='Blues',
-                                opacity=1,
-                                ),
-                    text=rets.columns,  # Hover text (stock labels)
-                    hovertemplate='<b>%{text}</b><br>Expected Return: %{x:.4f}<br>Risk (Std Dev): %{y:.4f}<extra></extra>'
-                ))
-
-                # Add annotations for each point using .iloc
-                for i in range(len(rets.columns)):
-                    ticker = rets.columns[i]  # Get ticker name
-                    fig.add_annotation(
-                        x=expected_return.iloc[i],  
-                        y=risk.iloc[i],              
-                        text=ticker,                 
-                        showarrow=True,
-                        arrowhead=0,
-                        ax=0,
-                        ay=-50,  # Adjust position of annotation
-                        font=dict(color='black'),
-                        bgcolor='white',
-                        bordercolor='black',
-                        borderwidth=1,
-                        borderpad=4
                     )
 
-        # Update layout with axis labels and title
-        fig.update_layout(
-            title="Expected Return vs Risk",
-            xaxis_title="Expected Return",
-            yaxis_title="Risk (Std Dev)",
-            showlegend=False
-        )
+                fig.update_layout(
+                    title="Stock Value as Close Price",
+                    xaxis_title="Date",
+                    yaxis_title="USD",
+                )
+                st.plotly_chart(fig)
 
-        # Display the Plotly chart
-        st.plotly_chart(fig)
+                metrics_container = st.container()
+                max_columns_per_row = 5
 
-        # Create a new container for metrics display below the plot
-        metrics_container = st.container()
+                for i in range(0, len(valid_tickers), max_columns_per_row):
+                    row_tickers = valid_tickers[i : i + max_columns_per_row]
+                    metric_col_list = st.columns(len(row_tickers))
 
-        # Maximum number of columns per row
-        max_columns_per_row = 5
+                    for met_index, ticker in enumerate(row_tickers):
+                        item = results[ticker]
+                        start_price = round(item["start_price"], 2)
+                        end_price = round(item["end_price"], 2)
+                        price_difference = round(item["price_difference"], 2)
 
-        # Iterate through the tickers and group them into rows
-        for i in range(0, len(st.session_state.tickers), max_columns_per_row):
-            row_tickers = st.session_state.tickers[i:i + max_columns_per_row]
-            
-            # Create a new row with columns for the tickers in this group
-            metric_col_list = st.columns(len(row_tickers))
+                        with metrics_container:
+                            with metric_col_list[met_index]:
+                                st.metric(
+                                    label=f"Start: {start_price} | End: {end_price}",
+                                    value=ticker,
+                                    delta=f"${price_difference}",
+                                )
 
-            for met_index, ticker in enumerate(row_tickers):
-                if ticker:  # Ensure ticker input isn't empty
+                ####### Logic for Total Percent Change Display #######
+                st.title("")
+                st.markdown(
+                    "<h3 class='center'>- Equalizing Initial Value: Analysis of Total Percent Change</h3>",
+                    unsafe_allow_html=True,
+                )
 
-                    # Calculate expected return (mean) and risk (standard deviation)
-                    expected_return = rets.mean().iloc[0]  # Use iloc to access the first position
-                    risk = rets.std().iloc[0]  # Use iloc to access the first position
+                fig = go.Figure()
+                for ticker in valid_tickers:
+                    df = results[ticker]["data"]
+                    first_close = df["Close"].dropna().iloc[0]
+                    pct_series = (df["Close"] / first_close - 1) * 100
+                    fig.add_trace(
+                        go.Scatter(
+                            x=df.index,
+                            y=pct_series,
+                            mode="lines",
+                            name=ticker,
+                        )
+                    )
 
-                    # Round the values for display
-                    expected_return = round(expected_return * 100, 2)  # Percent format
-                    risk = round(risk * 100, 2)  # Percent format
+                fig.update_layout(
+                    title="Stock Value as Total Percent Change",
+                    xaxis_title="Date",
+                    yaxis_title="Percent Change (%)",
+                )
+                st.plotly_chart(fig)
 
-                    # Display metrics
-                    with metrics_container:
-                        with metric_col_list[met_index]:  # Use met_index for correct column
-                            st.metric(
-                                label=f'Expected Return {expected_return}%',
-                                value=f"{ticker}",
-                                delta=f"Risk (Std): {risk}%",
-                                delta_color="inverse"  # Optional: inverse delta color for up/down
-                            )
+                metrics_container = st.container()
+                for i in range(0, len(valid_tickers), max_columns_per_row):
+                    row_tickers = valid_tickers[i : i + max_columns_per_row]
+                    metric_col_list = st.columns(len(row_tickers))
+
+                    for met_index, ticker in enumerate(row_tickers):
+                        item = results[ticker]
+                        start_price = round(item["start_price"], 2)
+                        end_price = round(item["end_price"], 2)
+                        percent_change = round(
+                            (item["end_price"] - item["start_price"])
+                            / item["start_price"]
+                            * 100,
+                            2,
+                        )
+
+                        with metrics_container:
+                            with metric_col_list[met_index]:
+                                st.metric(
+                                    label=f"Start: {start_price} | End: {end_price}",
+                                    value=ticker,
+                                    delta=f"{percent_change}%",
+                                )
+
+                ####### Logic for Risk vs Return Display #######
+                st.title("")
+                st.markdown(
+                    "<h3 class='center'>- To quantify risk, using pct returns, compare expected return with std of daily return</h3>",
+                    unsafe_allow_html=True,
+                )
+
+                risk_return_rows = []
+                for ticker in valid_tickers:
+                    exp_ret, risk_std = compute_risk_return(results[ticker]["data"])
+                    if exp_ret is not None and risk_std is not None:
+                        risk_return_rows.append({
+                            "ticker": ticker,
+                            "expected_return": exp_ret,
+                            "risk": risk_std,
+                        })
+
+                if risk_return_rows:
+                    rr_df = pd.DataFrame(risk_return_rows)
+                    fig = go.Figure()
+                    area = np.pi * 7
+
+                    fig.add_trace(
+                        go.Scatter(
+                            x=rr_df["expected_return"],
+                            y=rr_df["risk"],
+                            mode="markers",
+                            marker=dict(
+                                size=area,
+                                color=rr_df["expected_return"] * rr_df["risk"],
+                                colorscale="Blues",
+                                opacity=1,
+                            ),
+                            text=rr_df["ticker"],
+                            hovertemplate="<b>%{text}</b><br>Expected Return: %{x:.4f}<br>Risk (Std Dev): %{y:.4f}<extra></extra>",
+                        )
+                    )
+
+                    for _, row in rr_df.iterrows():
+                        fig.add_annotation(
+                            x=row["expected_return"],
+                            y=row["risk"],
+                            text=row["ticker"],
+                            showarrow=True,
+                            arrowhead=0,
+                            ax=0,
+                            ay=-50,
+                            font=dict(color="black"),
+                            bgcolor="white",
+                            bordercolor="black",
+                            borderwidth=1,
+                            borderpad=4,
+                        )
+
+                    fig.update_layout(
+                        title="Expected Return vs Risk",
+                        xaxis_title="Expected Return",
+                        yaxis_title="Risk (Std Dev)",
+                        showlegend=False,
+                    )
+                    st.plotly_chart(fig)
+
+                    metrics_container = st.container()
+                    for i in range(0, len(risk_return_rows), max_columns_per_row):
+                        row_items = risk_return_rows[i : i + max_columns_per_row]
+                        metric_col_list = st.columns(len(row_items))
+
+                        for met_index, rr_item in enumerate(row_items):
+                            exp_pct = round(rr_item["expected_return"] * 100, 2)
+                            risk_pct = round(rr_item["risk"] * 100, 2)
+
+                            with metrics_container:
+                                with metric_col_list[met_index]:
+                                    st.metric(
+                                        label=f"Expected Return {exp_pct}%",
+                                        value=rr_item["ticker"],
+                                        delta=f"Risk (Std): {risk_pct}%",
+                                        delta_color="inverse",
+                                    )
