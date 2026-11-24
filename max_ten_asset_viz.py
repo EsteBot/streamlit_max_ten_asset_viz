@@ -164,34 +164,67 @@ ticker_symbol_data = {
 
 
 @st.cache_data(ttl=3600, show_spinner=False)
-def get_stock_data(ticker: str, start_date, end_date):
-    clean_ticker = ticker.strip().upper()
-    if not clean_ticker or start_date >= end_date:
-        return None
+st.caption(f"yfinance version: {yf.__version__}")
 
-    try:
-        stock = yf.Ticker(clean_ticker)
-        data = stock.history(start=start_date, end=end_date)
-    except Exception:
-        return None
 
-    if data is None or data.empty or "Close" not in data.columns:
-        return None
+def debug_fetch(ticker: str, start_date, end_date):
+  clean_ticker = ticker.strip().upper()
+  start_str = pd.Timestamp(start_date).strftime("%Y-%m-%d")
+  end_str = pd.Timestamp(end_date).strftime("%Y-%m-%d")
 
-    close_series = data["Close"].dropna()
+  try:
+    df = yf.download(
+        clean_ticker,
+        start=start_str,
+        end=end_str,
+        progress=False,
+        threads=False,
+        auto_adjust=False,
+    )
+    if df is None or df.empty:
+      st.warning(
+          f"[{clean_ticker}] yf.download returned empty for {start_str} ->"
+          f" {end_str}"
+      )
+      return None
+
+    # Handle MultiIndex columns if yfinance returns (Price, Ticker)
+    if isinstance(df.columns, pd.MultiIndex):
+      if "Close" in df.columns.get_level_values(0):
+        close_col = df["Close"]
+        if isinstance(close_col, pd.DataFrame):
+          close_series = close_col.iloc[:, 0]
+        else:
+          close_series = close_col
+      else:
+        st.warning(
+            f"[{clean_ticker}] No 'Close' level in columns: {list(df.columns)}"
+        )
+        return None
+    else:
+      if "Close" not in df.columns:
+        st.warning(f"[{clean_ticker}] No 'Close' column in: {list(df.columns)}")
+        return None
+      close_series = df["Close"]
+
+    close_series = close_series.dropna()
     if close_series.empty:
-        return None
+      st.warning(f"[{clean_ticker}] 'Close' series was all NaN.")
+      return None
 
-    start_price = float(close_series.iloc[0])
-    end_price = float(close_series.iloc[-1])
-    price_difference = end_price - start_price
+    clean_df = pd.DataFrame({"Close": close_series})
+    start_price = float(clean_df["Close"].iloc[0])
+    end_price = float(clean_df["Close"].iloc[-1])
 
     return {
-        "data": data,
+        "data": clean_df,
         "start_price": start_price,
         "end_price": end_price,
-        "price_difference": price_difference,
+        "price_difference": end_price - start_price,
     }
+  except Exception as e:
+    st.error(f"[{clean_ticker}] Exception during fetch: {type(e).__name__}: {e}")
+    return None
 
 
 def compute_risk_return(df: pd.DataFrame):
