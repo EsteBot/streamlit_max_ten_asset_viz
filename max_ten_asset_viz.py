@@ -35,7 +35,8 @@ st.markdown(
 st.markdown("<h1 class='center'> </h1>", unsafe_allow_html=True)
 
 st.markdown(
-    "<h1 class='center'>Multi-Stock Comparision App</h1>", unsafe_allow_html=True
+    "<h1 class='center'>Multi-Stock Comparision App</h1>",
+    unsafe_allow_html=True,
 )
 
 st.markdown("<h1 class='center'> </h1>", unsafe_allow_html=True)
@@ -49,7 +50,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 st.markdown(
-    "<h3 class='center'>- All stock analysis done with data from Yahoo Finance</h3>",
+    "<h3 class='center'>- Historical close-price, cumulative return, and daily risk/return explorer</h3>",
     unsafe_allow_html=True,
 )
 
@@ -57,116 +58,38 @@ st.markdown("<h1 class='center'> </h1>", unsafe_allow_html=True)
 
 ticker_symbol_data = {
     "Company Name": [
-        "Apple",
-        "NVIDIA",
-        "Microsoft",
-        "Alphabet",
-        "Amazon",
-        "Meta Platforms",
-        "Berkshire Hathaway",
-        "Broadcom",
-        "Tesla",
-        "Eli Lilly",
-        "Walmart",
-        "JPMorgan Chase",
-        "Visa",
-        "Exxon Mobil",
-        "United Health",
-        "Oracle",
-        "Mastercard",
-        "Procter & Gamble",
-        "Costco",
-        "Home Depot",
-        "Johnson & Johnson",
-        "AbbVie",
-        "Bank of America",
-        "Netflix",
-        "Salesforce",
-        "Coca-Cola",
-        "Chevron",
-        "Advanced Micro Devices",
-        "Merck",
-        "T-Mobile",
-        "PepsiCo",
-        "Accenture",
-        "Linde",
-        "Cisco Systems",
-        "Wells Fargo",
-        "Adobe",
-        "McDonald's",
-        "Thermo Fisher Scientific",
-        "Philip Morris",
-        "Abbott Laboratories",
-        "ServiceNow",
-        "QUALCOMM",
-        "International Business Machines",
-        "Texas Instruments",
-        "Morgan Stanley",
-        "American Express",
-        "General Electric",
-        "Caterpillar",
-        "Intuitive Surgical",
-        "Danaher",
+        "Apple", "NVIDIA", "Microsoft", "Alphabet", "Amazon",
+        "Meta Platforms", "Berkshire Hathaway", "Broadcom", "Tesla", "Eli Lilly",
+        "Walmart", "JPMorgan Chase", "Visa", "Exxon Mobil", "United Health",
+        "Oracle", "Mastercard", "Procter & Gamble", "Costco", "Home Depot",
+        "Johnson & Johnson", "AbbVie", "Bank of America", "Netflix", "Salesforce",
+        "Coca-Cola", "Chevron", "Advanced Micro Devices", "Merck", "T-Mobile",
+        "PepsiCo", "Accenture", "Linde", "Cisco Systems", "Wells Fargo",
+        "Adobe", "McDonald's", "Thermo Fisher Scientific", "Philip Morris", "Abbott Laboratories",
+        "ServiceNow", "QUALCOMM", "International Business Machines", "Texas Instruments", "Morgan Stanley",
+        "American Express", "General Electric", "Caterpillar", "Intuitive Surgical", "Danaher",
     ],
     "Ticker Symbol": [
-        "AAPL",
-        "NVDA",
-        "MSFT",
-        "GOOGL",
-        "AMZN",
-        "META",
-        "BRK-B",
-        "AVGO",
-        "TSLA",
-        "LLY",
-        "WMT",
-        "JPM",
-        "V",
-        "XOM",
-        "UNH",
-        "ORCL",
-        "MA",
-        "PG",
-        "COST",
-        "HD",
-        "JNJ",
-        "ABBV",
-        "BAC",
-        "NFLX",
-        "CRM",
-        "KO",
-        "CVX",
-        "AMD",
-        "MRK",
-        "TMUS",
-        "PEP",
-        "ACN",
-        "LIN",
-        "CSCO",
-        "WFC",
-        "ADBE",
-        "MCD",
-        "TMO",
-        "PM",
-        "ABT",
-        "NOW",
-        "QCOM",
-        "IBM",
-        "TXN",
-        "MS",
-        "AXP",
-        "GE",
-        "CAT",
-        "ISRG",
-        "DHR",
+        "AAPL", "NVDA", "MSFT", "GOOGL", "AMZN",
+        "META", "BRK-B", "AVGO", "TSLA", "LLY",
+        "WMT", "JPM", "V", "XOM", "UNH",
+        "ORCL", "MA", "PG", "COST", "HD",
+        "JNJ", "ABBV", "BAC", "NFLX", "CRM",
+        "KO", "CVX", "AMD", "MRK", "TMUS",
+        "PEP", "ACN", "LIN", "CSCO", "WFC",
+        "ADBE", "MCD", "TMO", "PM", "ABT",
+        "NOW", "QCOM", "IBM", "TXN", "MS",
+        "AXP", "GE", "CAT", "ISRG", "DHR",
     ],
 }
 
-st.caption(f"yfinance version: {yf.__version__}")
 
-
-def debug_fetch(ticker: str, start_date, end_date):
+@st.cache_data(ttl=3600, show_spinner=False)
+def get_stock_data(ticker: str, start_date, end_date):
     clean_ticker = ticker.strip().upper()
+    if not clean_ticker or start_date >= end_date:
+        return None
+
     start_str = pd.Timestamp(start_date).strftime("%Y-%m-%d")
     end_str = pd.Timestamp(end_date).strftime("%Y-%m-%d")
 
@@ -179,45 +102,37 @@ def debug_fetch(ticker: str, start_date, end_date):
             threads=False,
             auto_adjust=False,
         )
-        if df is None or df.empty:
-            st.warning(f"[{clean_ticker}] yf.download returned empty for {start_str} -> {end_str}")
-            return None
-
-        if isinstance(df.columns, pd.MultiIndex):
-            if "Close" in df.columns.get_level_values(0):
-                close_col = df["Close"]
-                close_series = close_col.iloc[:, 0] if isinstance(close_col, pd.DataFrame) else close_col
-            else:
-                st.warning(f"[{clean_ticker}] No 'Close' level in columns: {list(df.columns)}")
-                return None
-        else:
-            if "Close" not in df.columns:
-                st.warning(f"[{clean_ticker}] No 'Close' column in: {list(df.columns)}")
-                return None
-            close_series = df["Close"]
-
-        close_series = close_series.dropna()
-        if close_series.empty:
-            st.warning(f"[{clean_ticker}] 'Close' series was all NaN.")
-            return None
-
-        clean_df = pd.DataFrame({"Close": close_series})
-        start_price = float(clean_df["Close"].iloc[0])
-        end_price = float(clean_df["Close"].iloc[-1])
-
-        return {
-            "data": clean_df,
-            "start_price": start_price,
-            "end_price": end_price,
-            "price_difference": end_price - start_price,
-        }
-    except Exception as e:
-        st.error(f"[{clean_ticker}] Exception during fetch: {type(e).__name__}: {e}")
+    except Exception:
         return None
 
+    if df is None or df.empty:
+        return None
 
-def get_stock_data(ticker: str, start_date, end_date):
-    return debug_fetch(ticker, start_date, end_date)
+    if isinstance(df.columns, pd.MultiIndex):
+        if "Close" not in df.columns.get_level_values(0):
+            return None
+        close_col = df["Close"]
+        close_series = close_col.iloc[:, 0] if isinstance(close_col, pd.DataFrame) else close_col
+    else:
+        if "Close" not in df.columns:
+            return None
+        close_series = df["Close"]
+
+    close_series = close_series.dropna()
+    if close_series.empty:
+        return None
+
+    clean_df = pd.DataFrame({"Close": close_series})
+    start_price = float(clean_df["Close"].iloc[0])
+    end_price = float(clean_df["Close"].iloc[-1])
+
+    return {
+        "data": clean_df,
+        "start_price": start_price,
+        "end_price": end_price,
+        "price_difference": end_price - start_price,
+    }
+
 
 def compute_risk_return(df: pd.DataFrame):
     daily_returns = df["Close"].pct_change().dropna()
@@ -229,7 +144,6 @@ def compute_risk_return(df: pd.DataFrame):
 # Create Streamlit app
 col_list = st.columns([1, 2, 1, 2, 1])
 
-# Initialize session state for the number of assets and tickers list
 if "num_of_assets" not in st.session_state:
     st.session_state.num_of_assets = 1
 
@@ -248,16 +162,13 @@ with col_list[1]:
 with col_list[1]:
     st.write("")
     if st.button("Create Ticker Id Fields"):
-        st.session_state.tickers = [
-            "" for _ in range(st.session_state.num_of_assets)
-        ]
+        st.session_state.tickers = ["" for _ in range(st.session_state.num_of_assets)]
 
 with col_list[3]:
     st.title("Date Range")
     start_date = st.date_input("Start Date", value=pd.to_datetime("2023-01-01"))
     end_date = st.date_input("End Date", value=pd.to_datetime("2023-12-31"))
 
-# If tickers were created, display ticker input fields
 if st.session_state.tickers:
     with col_list[1]:
         st.title("Stock Ids")
@@ -286,19 +197,28 @@ if st.session_state.tickers:
             st.warning("Start Date must be earlier than End Date.")
         else:
             results = {}
+            failed_tickers = []
+
             for ticker in active_tickers:
                 fetched = get_stock_data(ticker, start_date, end_date)
                 if fetched is None:
-                    st.warning(
-                        f"Could not load valid price data for '{ticker}' in the selected date range."
-                    )
+                    failed_tickers.append(ticker)
                 else:
                     results[ticker] = fetched
+
+            if failed_tickers:
+                st.warning(
+                    "Live historical data could not be retrieved for "
+                    + ", ".join(f"'{t}'" for t in failed_tickers)
+                    + " (Yahoo Finance may be rate-limiting this host IP or the symbol has no data in that window)."
+                )
 
             valid_tickers = list(results.keys())
 
             if not valid_tickers:
-                st.error("No valid stock data available to plot.")
+                st.info(
+                    "No live market series returned right now. Try again shortly or run locally if cloud rate limits are active."
+                )
             else:
                 ####### Logic for Stock Price Display #######
                 st.title("")
@@ -357,7 +277,7 @@ if st.session_state.tickers:
                 fig = go.Figure()
                 for ticker in valid_tickers:
                     df = results[ticker]["data"]
-                    first_close = df["Close"].dropna().iloc[0]
+                    first_close = df["Close"].iloc[0]
                     pct_series = (df["Close"] / first_close - 1) * 100
                     fig.add_trace(
                         go.Scatter(
@@ -385,7 +305,11 @@ if st.session_state.tickers:
                         start_price = round(item["start_price"], 2)
                         end_price = round(item["end_price"], 2)
                         percent_change = round(
-                            (item["end_price"] - item["start_price"]) / item["start_price"] * 100, 2)
+                            (item["end_price"] - item["start_price"])
+                            / item["start_price"]
+                            * 100,
+                            2,
+                        )
 
                         with metrics_container:
                             with metric_col_list[met_index]:
