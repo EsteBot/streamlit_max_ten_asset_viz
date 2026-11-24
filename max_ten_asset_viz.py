@@ -162,11 +162,8 @@ ticker_symbol_data = {
     ],
 }
 
-
-@st.cache_data(ttl=3600, show_spinner=False)
 st.caption(f"yfinance version: {yf.__version__}")
-
-
+@st.cache_data(ttl=3600, show_spinner=False)
 def debug_fetch(ticker: str, start_date, end_date):
   clean_ticker = ticker.strip().upper()
   start_str = pd.Timestamp(start_date).strftime("%Y-%m-%d")
